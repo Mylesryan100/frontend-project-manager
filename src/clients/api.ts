@@ -5,6 +5,6 @@ import axios from "axios";
 export const apiClient = axios.create({
     baseURL: 'http://localhost:4000',
     headers: {
-        Authorization: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7Il9pZCI6IjY5MzIwMjZkZjVhZWE2YjU5YTU0MTg3NCIsInVzZXJuYW1lIjoiTXlsZXNyeWFuMTIzIiwiZW1haWwiOiJ0ZXN0M0BtYWlsLmNvbSIsInJvbGUiOiJ1c2VyIn0sImlhdCI6MTc2NDg4NTE1MSwiZXhwIjoxNzY0ODkyMzUxfQ.FNreTMK9KFu3Niw8oFnNXmXfrGmWc0q_RIWd-000O9M'
+        Authorization: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7Il9pZCI6IjY5MzMxZGQyMzM4MjJmMDdiODEyNDg5NSIsInVzZXJuYW1lIjoidXNlcjEwIiwiZW1haWwiOiJ1c2VyM0BlbWFpbC5jb20iLCJyb2xlIjoidXNlciJ9LCJpYXQiOjE3NjQ5NTc2ODYsImV4cCI6MTc2NDk2NDg4Nn0.Vct6TjYLhkUPfoaJlftxX0vIA8iwMsAwoL-Tntdx4RE'
     }
 })
