@@ -1,4 +1,6 @@
-import { useState } from "react";
+import { useState, useContext } from "react";
+import { AuthContext } from "../context/AuthProvider";
+import { useNavigate } from "react-router-dom";
 
 function AuthPage() {
   const [showRegister, setShowRegister] = useState(true);
@@ -7,12 +9,18 @@ function AuthPage() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const auth = useContext(AuthContext);
+  const navigate = useNavigate();
 
-  const handleLogin = async () => {
+  const handleLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!auth) return;
     try {
       setError("");
       setLoading(true);
       // api call here
+      await auth.logIn(email, password);
+      navigate("/projects");
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
       console.error(error.message);
@@ -22,11 +30,15 @@ function AuthPage() {
     }
   };
 
-  const handleRegister = async () => {
+  const handleRegister = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!auth) return;
     try {
       setError("");
       setLoading(true);
       // api call here
+      await auth.logIn(email, password); 
+      navigate("/projects");
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
       console.error(error.message);
