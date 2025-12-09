@@ -18,7 +18,6 @@ function ProjectDetailsPage() {
   const [error, setError] = useState("");
   const [tasks, setTasks] = useState<Task[]>([]);
 
-
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [status, setStatus] = useState<TaskStatus>("todo");
@@ -32,7 +31,7 @@ function ProjectDetailsPage() {
         const res = await apiClient.get(`/api/projects/${projectId}`);
         console.log(res.data);
         setProject(res.data);
-        setTasks(res.data)
+        setTasks(res.data);
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
       } catch (error: any) {
         console.log(error);
@@ -45,7 +44,7 @@ function ProjectDetailsPage() {
     fetchProjectDetails();
   }, [projectId]);
 
-   const handleCreateTask = async (e: React.FormEvent) => {
+  const handleCreateTask = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!projectId || !title.trim()) return;
 
@@ -56,7 +55,7 @@ function ProjectDetailsPage() {
         status,
       });
 
-      setTasks(prev => [...prev, res.data]);
+      setTasks((prev) => [...prev, res.data]);
       setTitle("");
       setDescription("");
       setStatus("todo");
@@ -77,9 +76,7 @@ function ProjectDetailsPage() {
         { status: newStatus }
       );
 
-      setTasks(prev =>
-        prev.map(t => (t._id === taskId ? res.data : t))
-      );
+      setTasks((prev) => prev.map((t) => (t._id === taskId ? res.data : t)));
     } catch (err: any) {
       console.error(err);
       const message =
@@ -93,13 +90,20 @@ function ProjectDetailsPage() {
 
     try {
       await apiClient.delete(`/api/projects/${projectId}/tasks/${taskId}`);
-      setTasks(prev => prev.filter(t => t._id !== taskId));
+      setTasks((prev) => prev.filter((t) => t._id !== taskId));
     } catch (err: any) {
       console.error(err);
       const message =
         err.response?.data?.message || err.message || "Error deleting task";
       setError(message);
     }
+
+    const [projectRes, tasksRes] = await Promise.all([
+      apiClient.get(`/api/projects/${projectId}`),
+      apiClient.get(`/api/projects/${projectId}/tasks`),
+    ]);
+    setProject(projectRes.data);
+    setTasks(tasksRes.data);
   };
 
   if (loading) {
@@ -115,21 +119,14 @@ function ProjectDetailsPage() {
   }
 
   if (!project) {
-    return (
-      <div className="text-3xl text-white">
-        Project not found.
-      </div>
-    );
+    return <div className="text-3xl text-white">Project not found.</div>;
   }
-
-
 
   // if (loading) return <div className="text-3xl text-white">Loading...</div>;
 
   // if (error) return <div className="text-3xl text-white">Error loading Project</div>;
 
-
-   return (
+  return (
     <div className="text-white max-w-3xl mx-auto">
       <Link to="/projects" className="text-blue-400 hover:underline">
         ← Back to Projects
@@ -154,7 +151,7 @@ function ProjectDetailsPage() {
             <input
               className="w-full p-2 rounded bg-slate-900 border border-slate-700"
               value={title}
-              onChange={e => setTitle(e.target.value)}
+              onChange={(e) => setTitle(e.target.value)}
               required
             />
           </div>
@@ -164,7 +161,7 @@ function ProjectDetailsPage() {
             <textarea
               className="w-full p-2 rounded bg-slate-900 border border-slate-700"
               value={description}
-              onChange={e => setDescription(e.target.value)}
+              onChange={(e) => setDescription(e.target.value)}
             />
           </div>
 
@@ -173,7 +170,7 @@ function ProjectDetailsPage() {
             <select
               className="w-full p-2 rounded bg-slate-900 border border-slate-700"
               value={status}
-              onChange={e => setStatus(e.target.value as TaskStatus)}
+              onChange={(e) => setStatus(e.target.value as TaskStatus)}
             >
               <option value="todo">To Do</option>
               <option value="in-progress">In Progress</option>
@@ -197,16 +194,14 @@ function ProjectDetailsPage() {
           <p className="text-gray-400">No tasks yet. Add one above.</p>
         ) : (
           <ul className="space-y-3">
-            {tasks.map(task => (
+            {tasks.map((task) => (
               <li
                 key={task._id}
                 className="bg-slate-800 p-4 rounded flex flex-col gap-2"
               >
                 <div className="flex justify-between items-center">
                   <span className="font-semibold">{task.title}</span>
-                  <span className="text-sm text-gray-300">
-                    {task.status}
-                  </span>
+                  <span className="text-sm text-gray-300">{task.status}</span>
                 </div>
                 {task.description && (
                   <p className="text-gray-300 text-sm">{task.description}</p>

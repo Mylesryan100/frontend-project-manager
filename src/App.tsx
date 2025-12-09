@@ -1,4 +1,4 @@
-// import { useState } from 'react'
+import { useContext, type ReactNode } from "react";
 import "./App.css";
 import { Routes, Route } from "react-router-dom";
 import HomePage from "./pages/HomePage";
@@ -6,8 +6,25 @@ import ProjectsPage from "./pages/ProjectsPage";
 import ProjectDetailsPage from "./pages/ProjectDetailsPage";
 import AuthPage from "./pages/AuthPage";
 import Navbar from "./components/NavBar";
+import { AuthContext } from "./context/AuthProvider";
+import { Navigate } from "react-router-dom";
 
 console.log(import.meta.env.VITE_BACKEND_URL);
+
+interface ProtectedRouteProps {
+  children: ReactNode;
+}
+
+function ProtectedRoute({ children }: ProtectedRouteProps) {
+  const auth = useContext(AuthContext);
+  if (!auth) return null;
+
+  const { user } = auth;
+
+  if (!user) return <Navigate to="/auth" replace />;
+
+  return <>{children}</>;
+}
 
 function App() {
   return (
@@ -16,11 +33,18 @@ function App() {
         <h1 className="text-3xl font-bold text-white">Project Manager App</h1>
         <Navbar />
         <Routes>
-          <Route path="/" element={<HomePage />}/>
-          <Route path="/projects" element={<ProjectsPage />}/>
-          <Route path="/projects/:projectId" element={<ProjectDetailsPage />}/>
-          <Route path="/auth" element={<AuthPage />}/>
-        </Routes>  
+          <Route path="/" element={<HomePage />} />
+          <Route
+            path="/projects"
+            element={
+              <ProtectedRoute>
+                <ProjectsPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route path="/projects/:projectId" element={<ProjectDetailsPage />} />
+          <Route path="/auth" element={<AuthPage />} />
+        </Routes>
       </div>
     </>
   );
