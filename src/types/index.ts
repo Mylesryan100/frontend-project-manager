@@ -20,3 +20,10 @@ export interface AuthContextType {
   token: string | null;
   setToken: (token: string | null) => void;
 }
+
+// export interface Task {
+//   _id: string;
+//   title: string;
+//   description?: string;
+//   status: TaskStatus;
+// }
