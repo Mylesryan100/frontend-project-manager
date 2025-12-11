@@ -2,26 +2,28 @@ import { useEffect, useState } from "react";
 import { apiClient } from "../clients/api";
 import { Link } from "react-router-dom";
 import type { Project } from "../types";
+import ProjectForm from "../components/ProjectForm";
 
 function ProjectsPage() {
   const [projects, setProjects] = useState<Project[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  const [name, setName] = useState("");
-  const [description, setDescription] = useState("");
+  const [editingProject, setEditingProject] = useState<Project | null>(null);
 
   useEffect(() => {
     const fetchProjects = async () => {
       try {
         setLoading(true);
+        setError("");
         const res = await apiClient.get("/api/projects");
         console.log(res.data);
         setProjects(res.data);
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       } catch (error: any) {
         console.log(error);
-        setError(error.message);
+        const message =
+          error.response?.data?.message || error.message || "Error loading projects";
+        setError(message);
       } finally {
         setLoading(false);
       }
@@ -30,62 +32,51 @@ function ProjectsPage() {
     fetchProjects();
   }, []);
 
-  if (loading) return <div className="text-3xl text-white">Loading...</div>;
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-
+  const handleDelete = async (id: string) => {
     try {
+      setError("");
       setLoading(true);
-      const res = await apiClient.post("/api/projects", { name, description });
-      setProjects((prev) => [...prev, res.data]);
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      await apiClient.delete(`/api/projects/${id}`);
+      setProjects(prev => prev.filter(project => project._id !== id));
+      if (editingProject?._id === id) {
+        setEditingProject(null);
+      }
     } catch (error: any) {
       console.error(error);
-      setError(error.message);
+      const message =
+        error.response?.data?.message || error.message || "Error deleting project";
+      setError(message);
     } finally {
       setLoading(false);
-      setName("")
-      setDescription("")
     }
   };
+
+  if (loading && projects.length === 0) {
+    return <div className="text-3xl text-white">Loading...</div>;
+  }
+
   return (
     <div className="text-white">
       <h1 className="text-4xl font-bold text-white">Projects</h1>
 
-      <form
-        onSubmit={handleSubmit}
-        className=" border p-2 h-50 mt-10 flex flex-col gap-2 rounded"
-      >
-        <label htmlFor="project-name">Project Name: </label>
-        <input
-          type="text"
-          name="project-name"
-          className="border"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-        />
+      <ProjectForm
+        project={editingProject ?? undefined}
+        submitLabel={editingProject ? "Update Project" : "Create Project"}
+        onSuccess={(savedProject) => {
+          setProjects(prev => {
+            const exists = prev.some(p => p._id === savedProject._id);
+            return exists
+              ? prev.map(p => (p._id === savedProject._id ? savedProject : p))
+              : [...prev, savedProject];
+          });
+          setEditingProject(null);
+        }}
+      />
 
-        <label htmlFor="project-description">Project Description</label>
-        <input
-          type="text"
-          name="project-description"
-          className="border"
-          value={description}
-          onChange={(e) => setDescription(e.target.value)}
-        />
+      {error && <div className="mt-4 text-red-400">{error}</div>}
 
-        <input
-          type="submit"
-          value="Create Project"
-          className="mt-auto bg-sky-500 rounded"
-        />
-      </form>
-
-      {error && <div>{error}</div>}
-
-      <div className="w-full flex gap-5 mt-10">
-        {projects &&
+      <div className="w-full flex gap-5 mt-10 flex-wrap">
+        {projects.length > 0 ? (
           projects.map((project) => (
             <div
               key={project._id}
@@ -93,30 +84,39 @@ function ProjectsPage() {
             >
               <div className="font-bold">{project.name}</div>
               <div>{project.description}</div>
-              <Link
-                to={`/projects/${project._id}`}
-                className="mt-auto bg-sky-500 rounded"
-              >
-                See Project
-              </Link>
+
+              <div className="mt-auto flex flex-col gap-2">
+                <Link
+                  to={`/projects/${project._id}`}   
+                  className="bg-sky-500 rounded py-1"
+                >
+                  See Project
+                </Link>
+
+                <button
+                  type="button"
+                  className="bg-yellow-500 rounded py-1"
+                  onClick={() => setEditingProject(project)}
+                >
+                  Edit
+                </button>
+
+                <button
+                  type="button"
+                  className="bg-pink-500 rounded py-1"
+                  onClick={() => handleDelete(project._id)}
+                >
+                  Delete
+                </button>
+              </div>
             </div>
-          ))}
+          ))
+        ) : (
+          <div>no projects</div>
+        )}
       </div>
     </div>
   );
 }
 
 export default ProjectsPage;
-
-
-
-
-
-
-
-
-
-
-
-
-

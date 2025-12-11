@@ -21,6 +21,13 @@ export interface AuthContextType {
   setToken: (token: string | null) => void;
 }
 
+export interface Task {
+  _id: string;
+  title: string;
+  description?: string;
+  status: "todo" | "in-progress" | "done";
+}
+
 // export interface Task {
 //   _id: string;
 //   title: string;
