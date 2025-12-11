@@ -22,7 +22,9 @@ function ProjectsPage() {
       } catch (error: any) {
         console.log(error);
         const message =
-          error.response?.data?.message || error.message || "Error loading projects";
+          error.response?.data?.message ||
+          error.message ||
+          "Error loading projects";
         setError(message);
       } finally {
         setLoading(false);
@@ -37,14 +39,16 @@ function ProjectsPage() {
       setError("");
       setLoading(true);
       await apiClient.delete(`/api/projects/${id}`);
-      setProjects(prev => prev.filter(project => project._id !== id));
+      setProjects((prev) => prev.filter((project) => project._id !== id));
       if (editingProject?._id === id) {
         setEditingProject(null);
       }
     } catch (error: any) {
       console.error(error);
       const message =
-        error.response?.data?.message || error.message || "Error deleting project";
+        error.response?.data?.message ||
+        error.message ||
+        "Error deleting project";
       setError(message);
     } finally {
       setLoading(false);
@@ -63,10 +67,10 @@ function ProjectsPage() {
         project={editingProject ?? undefined}
         submitLabel={editingProject ? "Update Project" : "Create Project"}
         onSuccess={(savedProject) => {
-          setProjects(prev => {
-            const exists = prev.some(p => p._id === savedProject._id);
+          setProjects((prev) => {
+            const exists = prev.some((p) => p._id === savedProject._id);
             return exists
-              ? prev.map(p => (p._id === savedProject._id ? savedProject : p))
+              ? prev.map((p) => (p._id === savedProject._id ? savedProject : p))
               : [...prev, savedProject];
           });
           setEditingProject(null);
@@ -80,22 +84,22 @@ function ProjectsPage() {
           projects.map((project) => (
             <div
               key={project._id}
-              className="text-white w-50 flex flex-col h-50 border border-red-500 p-2 text-center rounded"
+              className="w-56 flex flex-col h-48 border border-sky-500/60 bg-slate-900/90 p-3 text-center rounded-lg shadow"
             >
               <div className="font-bold">{project.name}</div>
               <div>{project.description}</div>
 
               <div className="mt-auto flex flex-col gap-2">
                 <Link
-                  to={`/projects/${project._id}`}   
-                  className="bg-sky-500 rounded py-1"
+                  to={`/projects/${project._id}`}
+                  className="mt-auto rounded bg-sky-500 py-1 text-sm font-semibold hover:bg-sky-600"
                 >
                   See Project
                 </Link>
 
                 <button
                   type="button"
-                  className="bg-yellow-500 rounded py-1"
+                  className="mt-2 rounded bg-amber-500 py-1 text-sm font-semibold hover:bg-amber-600"
                   onClick={() => setEditingProject(project)}
                 >
                   Edit
@@ -103,7 +107,7 @@ function ProjectsPage() {
 
                 <button
                   type="button"
-                  className="bg-pink-500 rounded py-1"
+                  className="mt-2 rounded bg-pink-500 py-1 text-sm font-semibold hover:bg-pink-600"
                   onClick={() => handleDelete(project._id)}
                 >
                   Delete

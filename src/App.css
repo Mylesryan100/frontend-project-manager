@@ -58,3 +58,19 @@
 .read-the-docs {
   color: #888;
 }
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+}
+
+body {
+  background: #020617; /* or whatever dark color you want */
+}
+
+#root {
+  width: 100%;
+  min-height: 100vh;
+}

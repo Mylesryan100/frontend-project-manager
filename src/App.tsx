@@ -33,7 +33,9 @@ console.log(import.meta.env.VITE_BACKEND_URL);
 function App() {
   return (
     <>
+    <div className="min-h-screen bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 text-slate-100">
       <div className="p-5 bg-zinc-900 h-screen">
+        <h1 className="text-3xl font-bold mb-4">Project Manager App</h1>
       <Navbar />
         <Routes>
           <Route path="/" element={<HomePage />}/>
@@ -42,6 +44,7 @@ function App() {
           <Route path="/auth" element={<AuthPage />}/>
 
         </Routes>
+      </div>
       </div>
     </>
   );
