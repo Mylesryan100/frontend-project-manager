@@ -44,7 +44,7 @@ npm run dev
 After Vite will send the link to your URL
 http://localhost:5173
 
-4. Logging in and using the app
+Logging in and using the app
 
 In the browser, go to http://localhost:5173.
 
