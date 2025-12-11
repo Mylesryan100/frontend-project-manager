@@ -4,6 +4,8 @@ import { Link } from "react-router-dom";
 import type { Project } from "../types";
 import ProjectForm from "../components/ProjectForm";
 
+
+
 function ProjectsPage() {
   const [projects, setProjects] = useState<Project[]>([]);
   const [loading, setLoading] = useState(false);
@@ -107,7 +109,7 @@ function ProjectsPage() {
 
                 <button
                   type="button"
-                  className="mt-2 rounded bg-pink-500 py-1 text-sm font-semibold hover:bg-pink-600"
+                  className="bg-red-600 hover:bg-red-700 text-white rounded mb-2 px-3 py-1 transition"
                   onClick={() => handleDelete(project._id)}
                 >
                   Delete

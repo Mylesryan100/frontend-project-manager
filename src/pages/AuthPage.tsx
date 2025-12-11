@@ -1,6 +1,6 @@
 import { useState, useContext } from "react";
-import { AuthContext } from "../context/AuthProvider";
 import { useNavigate } from "react-router-dom";
+import { AuthContext } from "../context/AuthProvider";
 
 function AuthPage() {
   const [showRegister, setShowRegister] = useState(true);
@@ -9,17 +9,17 @@ function AuthPage() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
-  const auth = useContext(AuthContext);
-  const navigate = useNavigate();
 
-  const handleLogin = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!auth) return;
+  const authContext = useContext(AuthContext);
+  const navigate = useNavigate();
+  const { logIn, register } = authContext!;
+
+  const handleLogin = async () => {
     try {
       setError("");
       setLoading(true);
       // api call here
-      await auth.logIn(email, password);
+      await logIn(email, password);
       navigate("/projects");
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
@@ -30,19 +30,20 @@ function AuthPage() {
     }
   };
 
-  const handleRegister = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!auth) return;
+  const handleRegister = async () => {
     try {
       setError("");
       setLoading(true);
       // api call here
-      await auth.logIn(email, password); 
+      await register(username, email, password);
       navigate("/projects");
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
-      console.error(error.message);
-      setError(error.message);
+    //   console.error(error.message);
+    //   setError(error.message);
+    console.error("Register error:", error);
+    // <-- throw error so frontend can catch it and show messages
+    throw new Error(error.response?.data?.message || "Registration failed");
     } finally {
       setLoading(false);
     }
@@ -54,13 +55,18 @@ function AuthPage() {
         Start managing your projects.
       </h1>
 
-      {/* ERROR  */}
+      {/* This section is for ERRORS  */}
       {error && <div>{error}</div>}
 
-      {/* FORM  */}
+      {/*This section is for the register FORM  */}
       {showRegister ? (
         <form
-          onSubmit={handleRegister}
+          onSubmit={(e) => {
+            // prevent page reload
+            // without e.preventDefault can cause the page to refresh before login function runs.
+            e.preventDefault();
+            handleRegister();
+          }}
           className="border mt-10 p-2 h-60 w-150 flex flex-col justify-around items-center rounded"
         >
           <div className="text-xl font-bold">Register</div>
@@ -70,7 +76,6 @@ function AuthPage() {
             <input
               type="text"
               name="username"
-              id=""
               value={username}
               onChange={(e) => setUsername(e.target.value)}
               className="ml-2 border rounded"
@@ -81,7 +86,6 @@ function AuthPage() {
             <input
               type="text"
               name="email"
-              id=""
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               className="ml-10 border rounded"
@@ -92,7 +96,6 @@ function AuthPage() {
             <input
               type="password"
               name="password"
-              id=""
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               className="ml-3 border rounded"
@@ -110,7 +113,12 @@ function AuthPage() {
         </form>
       ) : (
         <form
-          onSubmit={handleLogin}
+          onSubmit={(e) => {
+            // prevent page reload
+            // can cause the page to refresh before login function runs.
+            e.preventDefault();
+            handleLogin();
+          }}
           className="border mt-10 p-2 h-60 w-150 flex flex-col justify-around items-center rounded"
         >
           <div className="text-xl font-bold">Login</div>
@@ -119,8 +127,8 @@ function AuthPage() {
             <input
               type="text"
               name="email"
-              id=""
               value={email}
+              //   React collects email
               onChange={(e) => setEmail(e.target.value)}
               className="ml-10 border rounded"
             />
@@ -130,15 +138,15 @@ function AuthPage() {
             <input
               type="password"
               name="password"
-              id=""
               value={password}
+              //   React collects password
               onChange={(e) => setPassword(e.target.value)}
               className="ml-3 border rounded"
             />
           </label>
           <input
             type="submit"
-            value="Register"
+            value="Login"
             className="border py-2 px-4 rounded"
           />
 
@@ -157,6 +165,7 @@ function AuthPage() {
           >
             Sign in
           </span>{" "}
+          <p className="text-sm text-center">password minimum length:8</p>
         </div>
       ) : (
         <div>
